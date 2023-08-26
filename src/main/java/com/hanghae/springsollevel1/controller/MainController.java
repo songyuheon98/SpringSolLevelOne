@@ -2,6 +2,7 @@ package com.hanghae.springsollevel1.controller;
 
 import com.hanghae.springsollevel1.dto.LevelOneDataResponseDto;
 import com.hanghae.springsollevel1.dto.LevelOneDataRequestDto;
+import com.hanghae.springsollevel1.dto.LevelOneDataResponsePullDto;
 import com.hanghae.springsollevel1.dto.LevelOneDataResponseSolTwoDto;
 import com.hanghae.springsollevel1.entity.LevelOneData;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -15,10 +16,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.logging.SimpleFormatter;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,7 +25,7 @@ import java.util.stream.Stream;
 public class MainController {
 
     private final JdbcTemplate jdbcTemplate;
-
+    private int i=0;
     public MainController(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -35,6 +33,13 @@ public class MainController {
     @PostMapping("/contentsCreate")
     public LevelOneDataResponseDto createData(@RequestBody LevelOneDataRequestDto requestDto) {
         // RequestDto -> Entity
+        try {
+            Thread.sleep(1000);
+        }
+        catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
         LevelOneData levelOneData = new LevelOneData(requestDto);
 
         Calendar cal = Calendar.getInstance();
@@ -99,16 +104,75 @@ public class MainController {
                 );
             }
         });
+
         return tempLevelOneData.stream().sorted((a1,a2)->a2.getNowTime().compareTo(a1.getNowTime()))
                 .map(f->new LevelOneDataResponseSolTwoDto(f.getTitle(),f.getAuthor(),f.getContents(),f.getNowTime()))
                 .collect(Collectors.toList());
-
     }
 
     @GetMapping("/choiceRead/{title}")
     public List<LevelOneDataResponseSolTwoDto> getChoiceData(@PathVariable String title){
-        return getAllData().stream().filter(a->a.getTitle().equals(title)).map(f->f).collect(Collectors.toList());
+        return getAllData().stream().filter(a->a.getTitle().equals(title)).collect(Collectors.toList());
     }
 
+    @PutMapping("/choiceUpdate/{id}")
+    public List<LevelOneDataResponseSolTwoDto> updateMemo(@PathVariable Long id, @RequestBody LevelOneDataResponsePullDto levelOneDataResponsePullDto) {
+        // 해당 메모가 DB에 존재하는지 확인
+        LevelOneData levelOneData = findDataById(id);
+        if(levelOneData != null) {
+            if(levelOneDataResponsePullDto.getPw().equals(levelOneData.getPw())) {
+                String sql = "UPDATE levelonedata SET title = ?, author =?, contents = ? WHERE id = ?";
+                jdbcTemplate.update(sql,
+                        levelOneDataResponsePullDto.getTitle(), levelOneDataResponsePullDto.getAuthor(),
+                        levelOneDataResponsePullDto.getContents(),
+                        id);
+                return getAllData().stream().filter(a->a.getNowTime().equals(levelOneData.getNowTime())).collect(Collectors.toList());
+            }
+            else
+                throw new IllegalArgumentException("PW 가 맞지 않습니다.");
+        } else
+            throw new IllegalArgumentException("선택한 메모는 존재하지 않습니다.");
 
+    }
+
+    @DeleteMapping("/choiceDelete/{id}")
+    public String updateMemo(@PathVariable Long id, @RequestBody Map<String,String> pw) {
+        System.out.println(pw.get("pw"));
+        // 해당 메모가 DB에 존재하는지 확인
+        LevelOneData levelOneData = findDataById(id);
+        if(levelOneData != null) {
+            if(levelOneData.getPw().equals(pw.get("pw"))) {
+                String sql = "DELETE FROM levelonedata WHERE id = ?";
+                jdbcTemplate.update(sql, id);
+                return "삭제 완료 됬어요";
+            }
+            else
+                throw new IllegalArgumentException("PW 가 맞지 않습니다.");
+        } else
+            throw new IllegalArgumentException("선택한 메모는 존재하지 않습니다.");
+
+    }
+    private LevelOneData findDataById(Long id) {
+        // DB 조회
+        String sql = "SELECT * FROM levelonedata WHERE id = ?";
+
+        return jdbcTemplate.query(sql, rs -> {
+            if(rs.next()) {
+                //찾은ㄱ
+                LevelOneData levelOneData = new LevelOneData();
+
+                levelOneData.setId(rs.getLong("id"));
+                levelOneData.setTitle(rs.getString("title"));
+                levelOneData.setAuthor(rs.getString("author"));
+                levelOneData.setPw(rs.getString("pw"));
+                levelOneData.setContents(rs.getString("contents"));
+                levelOneData.setNowTime(rs.getString("nowTime"));
+
+                return levelOneData;
+            } else {
+                return null;
+            }
+        }, id);
+        // 마지막 인자 sql에 들어가는
+    }
 }
