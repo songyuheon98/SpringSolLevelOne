@@ -30,7 +30,7 @@ public class MainController {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @PostMapping("/contentsCreate")
+    @PostMapping("/contentsCreate") // 생성
     public LevelOneDataResponseDto createData(@RequestBody LevelOneDataRequestDto requestDto) {
         // RequestDto -> Entity
         try {
@@ -79,7 +79,7 @@ public class MainController {
         return levelOneDataResponseDto;
     }
 
-    @GetMapping("/allRead")
+    @GetMapping("/allRead") // 모두 조회
     public List<LevelOneDataResponseSolTwoDto> getAllData() {
         // DB 조회
         String sql = "SELECT * FROM levelonedata";
@@ -110,12 +110,13 @@ public class MainController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/choiceRead/{title}")
+    @GetMapping("/choiceRead/{title}") // 특정 조회
     public List<LevelOneDataResponseSolTwoDto> getChoiceData(@PathVariable String title){
         return getAllData().stream().filter(a->a.getTitle().equals(title)).collect(Collectors.toList());
     }
 
-    @PutMapping("/choiceUpdate/{id}")
+
+    @PutMapping("/choiceUpdate/{id}") // 선택 수정
     public List<LevelOneDataResponseSolTwoDto> updateMemo(@PathVariable Long id, @RequestBody LevelOneDataResponsePullDto levelOneDataResponsePullDto) {
         // 해당 메모가 DB에 존재하는지 확인
         LevelOneData levelOneData = findDataById(id);
