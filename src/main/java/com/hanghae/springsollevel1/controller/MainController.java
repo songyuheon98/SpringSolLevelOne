@@ -17,20 +17,18 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.logging.SimpleFormatter;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 @RestController
 @RequestMapping("/api")
 public class MainController {
 
     private final JdbcTemplate jdbcTemplate;
-    private int i=0;
     public MainController(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @PostMapping("/contentsCreate") // 생성
+    @PostMapping("/data") // 생성
     public LevelOneDataResponseDto createData(@RequestBody LevelOneDataRequestDto requestDto) {
         // RequestDto -> Entity
         try {
@@ -43,7 +41,6 @@ public class MainController {
         LevelOneData levelOneData = new LevelOneData(requestDto);
 
         Calendar cal = Calendar.getInstance();
-
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
         String nowTime = formatter.format(cal.getTime());
 
@@ -75,11 +72,12 @@ public class MainController {
         levelOneData.setId(key);
 //
 //        // Entity -> ResponseDto
-        LevelOneDataResponseDto levelOneDataResponseDto = new LevelOneDataResponseDto(levelOneData);
-        return levelOneDataResponseDto;
+//        LevelOneDataResponseDto levelOneDataResponseDto = new LevelOneDataResponseDto(levelOneData);
+
+        return new LevelOneDataResponseDto(levelOneData);
     }
 
-    @GetMapping("/allRead") // 모두 조회
+    @GetMapping("/data") // 모두 조회
     public List<LevelOneDataResponseSolTwoDto> getAllData() {
         // DB 조회
         String sql = "SELECT * FROM levelonedata";
@@ -110,13 +108,14 @@ public class MainController {
                 .collect(Collectors.toList());
     }
 
-    @GetMapping("/choiceRead/{title}") // 특정 조회
-    public List<LevelOneDataResponseSolTwoDto> getChoiceData(@PathVariable String title){
-        return getAllData().stream().filter(a->a.getTitle().equals(title)).collect(Collectors.toList());
+    @GetMapping("/data/{id}") // 특정 조회
+    public List<LevelOneDataResponseSolTwoDto> getChoiceData(@PathVariable long id){
+        LevelOneData levelOneData = findDataById(id);
+        return getAllData().stream().filter(a->a.getNowTime().equals(levelOneData.getNowTime())).collect(Collectors.toList());
     }
 
 
-    @PutMapping("/choiceUpdate/{id}") // 선택 수정
+    @PutMapping("/data/{id}") // 선택 수정
     public List<LevelOneDataResponseSolTwoDto> updateMemo(@PathVariable Long id, @RequestBody LevelOneDataResponsePullDto levelOneDataResponsePullDto) {
         // 해당 메모가 DB에 존재하는지 확인
         LevelOneData levelOneData = findDataById(id);
@@ -136,7 +135,7 @@ public class MainController {
 
     }
 
-    @DeleteMapping("/choiceDelete/{id}")
+    @DeleteMapping("/data/{id}")
     public String updateMemo(@PathVariable Long id, @RequestBody Map<String,String> pw) {
         System.out.println(pw.get("pw"));
         // 해당 메모가 DB에 존재하는지 확인
