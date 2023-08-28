@@ -19,7 +19,7 @@ public class MainController {
     }
     @PostMapping("/data") // 생성
     public LevelOneDataResponseDto createData(@RequestBody LevelOneDataRequestDto requestDto) {
-        return new LevelOneDataResponseDto(mainService.createData(requestDto));
+        return mainService.createData(requestDto);
     }
 
     @GetMapping("/data") // 모두 조회
@@ -28,13 +28,13 @@ public class MainController {
     }
 
     @GetMapping("/data/{id}") // 특정 조회
-    public List<LevelOneDataResponseSolTwoDto> getChoiceData(@PathVariable long id){
+    public LevelOneDataResponseSolTwoDto getChoiceData(@PathVariable long id){
         return mainService.getChoiceData(id);
     }
 
 
     @PutMapping("/data/{id}") // 선택 수정
-    public List<LevelOneDataResponseSolTwoDto> updateData(@PathVariable Long id, @RequestBody LevelOneDataRequestPullDto levelOneDataResponsePullDto) {
+    public LevelOneDataResponseSolTwoDto updateData(@PathVariable Long id, @RequestBody LevelOneDataRequestPullDto levelOneDataResponsePullDto) {
         return mainService.updateData(id,levelOneDataResponsePullDto);
     }
     @DeleteMapping("/data/{id}")
