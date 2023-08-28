@@ -5,7 +5,7 @@ import com.hanghae.springsollevel1.dto.LevelOneDataResponsePullDto;
 import com.hanghae.springsollevel1.dto.LevelOneDataResponseSolTwoDto;
 import com.hanghae.springsollevel1.entity.LevelOneData;
 import com.hanghae.springsollevel1.repository.MainRepository;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Service;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -13,11 +13,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Service
 public class MainService {
     private final MainRepository mainRepository;
+
     private LevelOneData levelOneData;
-    public MainService(JdbcTemplate jdbcTemplate) {
-        this.mainRepository = new MainRepository(jdbcTemplate);
+    public MainService(MainRepository mainRepository,LevelOneData levelOneData) {
+        this.mainRepository = mainRepository;
     }
 
     public LevelOneData createData(LevelOneDataRequestDto requestDto) {

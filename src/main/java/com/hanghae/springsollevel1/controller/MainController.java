@@ -5,7 +5,6 @@ import com.hanghae.springsollevel1.dto.LevelOneDataResponseDto;
 import com.hanghae.springsollevel1.dto.LevelOneDataResponsePullDto;
 import com.hanghae.springsollevel1.dto.LevelOneDataResponseSolTwoDto;
 import com.hanghae.springsollevel1.service.MainService;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,8 +14,8 @@ import java.util.Map;
 @RequestMapping("/api")
 public class MainController {
     private final MainService mainService;
-    public MainController(JdbcTemplate jdbcTemplate) {
-        this.mainService = new MainService(jdbcTemplate);
+    public MainController(MainService mainService) {
+        this.mainService = mainService;
     }
     @PostMapping("/data") // 생성
     public LevelOneDataResponseDto createData(@RequestBody LevelOneDataRequestDto requestDto) {

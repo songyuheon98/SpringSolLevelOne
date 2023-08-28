@@ -4,10 +4,12 @@ import com.hanghae.springsollevel1.dto.LevelOneDataRequestDto;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.stereotype.Component;
 
 @Getter
 @Setter
 @NoArgsConstructor
+@Component
 public class LevelOneData {
     private String title;
     private String author;
