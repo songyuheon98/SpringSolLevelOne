@@ -14,38 +14,32 @@ import java.util.Map;
 @RestController
 @RequestMapping("/api")
 public class MainController {
-    private final JdbcTemplate jdbcTemplate;
+    private final MainService mainService;
     public MainController(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        this.mainService = new MainService(jdbcTemplate);
     }
-
     @PostMapping("/data") // 생성
     public LevelOneDataResponseDto createData(@RequestBody LevelOneDataRequestDto requestDto) {
-        MainService mainService = new MainService(jdbcTemplate);
         return new LevelOneDataResponseDto(mainService.createData(requestDto));
     }
 
     @GetMapping("/data") // 모두 조회
     public List<LevelOneDataResponseSolTwoDto> getAllData() {
-        MainService mainService = new MainService(jdbcTemplate);
         return mainService.getAllData();
     }
 
     @GetMapping("/data/{id}") // 특정 조회
     public List<LevelOneDataResponseSolTwoDto> getChoiceData(@PathVariable long id){
-        MainService mainService = new MainService(jdbcTemplate);
         return mainService.getChoiceData(id);
     }
 
 
     @PutMapping("/data/{id}") // 선택 수정
     public List<LevelOneDataResponseSolTwoDto> updateData(@PathVariable Long id, @RequestBody LevelOneDataResponsePullDto levelOneDataResponsePullDto) {
-        MainService mainService = new MainService(jdbcTemplate);
         return mainService.updateData(id,levelOneDataResponsePullDto);
     }
     @DeleteMapping("/data/{id}")
     public String deleteData(@PathVariable Long id, @RequestBody Map<String,String> pw) {
-        MainService mainService = new MainService(jdbcTemplate);
         return mainService.deleteData(id,pw);
     }
 }

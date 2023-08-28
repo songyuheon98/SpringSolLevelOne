@@ -14,15 +14,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MainService {
-    private final JdbcTemplate jdbcTemplate;
+    private final MainRepository mainRepository;
+    private LevelOneData levelOneData;
     public MainService(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
+        this.mainRepository = new MainRepository(jdbcTemplate);
     }
 
     public LevelOneData createData(LevelOneDataRequestDto requestDto) {
-        LevelOneData levelOneData = new LevelOneData(requestDto);
+        this.levelOneData = new LevelOneData(requestDto);
         Calendar cal = Calendar.getInstance();
-        MainRepository mainRepository = new MainRepository(jdbcTemplate);
 
         SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd-hh-mm-ss");
         String nowTime = formatter.format(cal.getTime());
@@ -33,26 +33,23 @@ public class MainService {
         catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
         levelOneData.setNowTime(nowTime);
         return mainRepository.save(levelOneData);
     }
 
     public List<LevelOneDataResponseSolTwoDto> getAllData() {
-        MainRepository mainRepository = new MainRepository(jdbcTemplate);
         return mainRepository.findAllData();
 
     }
 
     public List<LevelOneDataResponseSolTwoDto> getChoiceData(long id) {
-        return getAllData().stream().filter(a->a.getNowTime().equals(new MainRepository(jdbcTemplate)
+        return getAllData().stream().filter(a->a.getNowTime().equals(mainRepository
                 .findDataById(id).getNowTime())).collect(Collectors.toList());
     }
 
     public List<LevelOneDataResponseSolTwoDto> updateData(Long id, LevelOneDataResponsePullDto levelOneDataResponsePullDto) {
         // 해당 메모가 DB에 존재하는지 확인
-        MainRepository mainRepository =new MainRepository(jdbcTemplate);
-        LevelOneData levelOneData = mainRepository.findDataById(id);
+        this.levelOneData = mainRepository.findDataById(id);
 
         if(levelOneData != null) {
             if(levelOneDataResponsePullDto.getPw().equals(levelOneData.getPw())) {
@@ -69,8 +66,7 @@ public class MainService {
 
 
     public String deleteData(Long id, Map<String, String> pw) {
-        MainRepository mainRepository =new MainRepository(jdbcTemplate);
-        LevelOneData levelOneData = mainRepository.findDataById(id);
+        this.levelOneData = mainRepository.findDataById(id);
 
         if(levelOneData != null) {
             if(levelOneData.getPw().equals(pw.get("pw"))) {
