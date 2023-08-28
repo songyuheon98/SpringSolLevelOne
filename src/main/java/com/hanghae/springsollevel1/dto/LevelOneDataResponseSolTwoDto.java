@@ -20,4 +20,11 @@ public class LevelOneDataResponseSolTwoDto {
     }
 
 
+    public LevelOneDataResponseSolTwoDto(LevelOneData data) {
+        this.title=data.getTitle();
+        this.author = data.getAuthor();
+        this.contents = data.getContents();
+        this.nowTime = data.getNowTime();
+    }
+
 }

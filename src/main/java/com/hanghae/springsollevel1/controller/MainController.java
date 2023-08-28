@@ -2,10 +2,9 @@ package com.hanghae.springsollevel1.controller;
 
 import com.hanghae.springsollevel1.dto.LevelOneDataRequestDto;
 import com.hanghae.springsollevel1.dto.LevelOneDataResponseDto;
-import com.hanghae.springsollevel1.dto.LevelOneDataResponsePullDto;
+import com.hanghae.springsollevel1.dto.LevelOneDataRequestPullDto;
 import com.hanghae.springsollevel1.dto.LevelOneDataResponseSolTwoDto;
 import com.hanghae.springsollevel1.service.MainService;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -15,12 +14,12 @@ import java.util.Map;
 @RequestMapping("/api")
 public class MainController {
     private final MainService mainService;
-    public MainController(JdbcTemplate jdbcTemplate) {
-        this.mainService = new MainService(jdbcTemplate);
+    public MainController(MainService mainService) {
+        this.mainService = mainService;
     }
     @PostMapping("/data") // 생성
     public LevelOneDataResponseDto createData(@RequestBody LevelOneDataRequestDto requestDto) {
-        return new LevelOneDataResponseDto(mainService.createData(requestDto));
+        return mainService.createData(requestDto);
     }
 
     @GetMapping("/data") // 모두 조회
@@ -29,13 +28,13 @@ public class MainController {
     }
 
     @GetMapping("/data/{id}") // 특정 조회
-    public List<LevelOneDataResponseSolTwoDto> getChoiceData(@PathVariable long id){
+    public LevelOneDataResponseSolTwoDto getChoiceData(@PathVariable long id){
         return mainService.getChoiceData(id);
     }
 
 
     @PutMapping("/data/{id}") // 선택 수정
-    public List<LevelOneDataResponseSolTwoDto> updateData(@PathVariable Long id, @RequestBody LevelOneDataResponsePullDto levelOneDataResponsePullDto) {
+    public LevelOneDataResponseSolTwoDto updateData(@PathVariable Long id, @RequestBody LevelOneDataRequestPullDto levelOneDataResponsePullDto) {
         return mainService.updateData(id,levelOneDataResponsePullDto);
     }
     @DeleteMapping("/data/{id}")
