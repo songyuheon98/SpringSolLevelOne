@@ -45,9 +45,10 @@ public class MainService {
     }
 
     public List<LevelOneDataResponseSolTwoDto> getChoiceData(long id) {
-        return getAllData().stream().filter(a->a.getNowTime().equals(mainRepository
-                .findDataById(id).getNowTime())).collect(Collectors.toList());
+        return getAllData().stream().filter(a->a.getNowTime().equals(mainRepository.findDataById(id).getNowTime())).collect(Collectors.toList());
     }
+
+    // getAllData
 
     public List<LevelOneDataResponseSolTwoDto> updateData(Long id, LevelOneDataResponsePullDto levelOneDataResponsePullDto) {
         // 해당 메모가 DB에 존재하는지 확인
@@ -68,6 +69,7 @@ public class MainService {
 
 
     public String deleteData(Long id, Map<String, String> pw) {
+
         this.levelOneData = mainRepository.findDataById(id);
 
         if(levelOneData != null) {
