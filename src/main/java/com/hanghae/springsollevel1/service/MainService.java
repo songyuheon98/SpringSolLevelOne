@@ -1,7 +1,7 @@
 package com.hanghae.springsollevel1.service;
 
 import com.hanghae.springsollevel1.dto.LevelOneDataRequestDto;
-import com.hanghae.springsollevel1.dto.LevelOneDataResponsePullDto;
+import com.hanghae.springsollevel1.dto.LevelOneDataRequestPullDto;
 import com.hanghae.springsollevel1.dto.LevelOneDataResponseSolTwoDto;
 import com.hanghae.springsollevel1.entity.LevelOneData;
 import com.hanghae.springsollevel1.repository.MainRepository;
@@ -18,7 +18,7 @@ public class MainService {
     private final MainRepository mainRepository;
 
     private LevelOneData levelOneData;
-    public MainService(MainRepository mainRepository,LevelOneData levelOneData) {
+    public MainService(MainRepository mainRepository) {
         this.mainRepository = mainRepository;
     }
 
@@ -46,11 +46,12 @@ public class MainService {
 
     public List<LevelOneDataResponseSolTwoDto> getChoiceData(long id) {
         return getAllData().stream().filter(a->a.getNowTime().equals(mainRepository.findDataById(id).getNowTime())).collect(Collectors.toList());
+
     }
 
     // getAllData
 
-    public List<LevelOneDataResponseSolTwoDto> updateData(Long id, LevelOneDataResponsePullDto levelOneDataResponsePullDto) {
+    public List<LevelOneDataResponseSolTwoDto> updateData(Long id, LevelOneDataRequestPullDto levelOneDataResponsePullDto) {
         // 해당 메모가 DB에 존재하는지 확인
         this.levelOneData = mainRepository.findDataById(id);
 

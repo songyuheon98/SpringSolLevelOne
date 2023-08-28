@@ -2,7 +2,7 @@ package com.hanghae.springsollevel1.controller;
 
 import com.hanghae.springsollevel1.dto.LevelOneDataRequestDto;
 import com.hanghae.springsollevel1.dto.LevelOneDataResponseDto;
-import com.hanghae.springsollevel1.dto.LevelOneDataResponsePullDto;
+import com.hanghae.springsollevel1.dto.LevelOneDataRequestPullDto;
 import com.hanghae.springsollevel1.dto.LevelOneDataResponseSolTwoDto;
 import com.hanghae.springsollevel1.service.MainService;
 import org.springframework.web.bind.annotation.*;
@@ -34,7 +34,7 @@ public class MainController {
 
 
     @PutMapping("/data/{id}") // 선택 수정
-    public List<LevelOneDataResponseSolTwoDto> updateData(@PathVariable Long id, @RequestBody LevelOneDataResponsePullDto levelOneDataResponsePullDto) {
+    public List<LevelOneDataResponseSolTwoDto> updateData(@PathVariable Long id, @RequestBody LevelOneDataRequestPullDto levelOneDataResponsePullDto) {
         return mainService.updateData(id,levelOneDataResponsePullDto);
     }
     @DeleteMapping("/data/{id}")

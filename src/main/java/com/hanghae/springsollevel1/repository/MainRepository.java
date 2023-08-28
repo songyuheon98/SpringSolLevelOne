@@ -1,7 +1,7 @@
 package com.hanghae.springsollevel1.repository;
 
 import com.hanghae.springsollevel1.dto.LevelOneDataResponseDto;
-import com.hanghae.springsollevel1.dto.LevelOneDataResponsePullDto;
+import com.hanghae.springsollevel1.dto.LevelOneDataRequestPullDto;
 import com.hanghae.springsollevel1.dto.LevelOneDataResponseSolTwoDto;
 import com.hanghae.springsollevel1.entity.LevelOneData;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -78,11 +78,22 @@ public class MainRepository {
 
         return tempLevelOneData.stream().sorted((a1,a2)->a2.getNowTime().compareTo(a1.getNowTime()))
                 .map(f->new LevelOneDataResponseSolTwoDto(f.getTitle(),f.getAuthor(),f.getContents(),f.getNowTime()))
-                .collect(Collectors.toList());
+                .collect(Collectors.toList());                                                                   // List<LevelOneDataResponseSolTwoDto>
     }
 
+    public void update(Long id, LevelOneDataRequestPullDto levelOneDataResponsePullDto) {
+        String sql = "UPDATE levelonedata SET title = ?, author =?, contents = ? WHERE id = ?";
+        jdbcTemplate.update(sql,
+                levelOneDataResponsePullDto.getTitle(), levelOneDataResponsePullDto.getAuthor(),
+                levelOneDataResponsePullDto.getContents(),
+                id);
 
+    }
 
+    public void delete(Long id) {
+        String sql = "DELETE FROM levelonedata WHERE id = ?";
+        jdbcTemplate.update(sql, id);
+    }
     public LevelOneData findDataById(Long id) {
         // DB 조회
         String sql = "SELECT * FROM levelonedata WHERE id = ?";
@@ -105,19 +116,5 @@ public class MainRepository {
 
         }, id);
         // 마지막 인자 sql에 들어가는
-    }
-
-    public void update(Long id, LevelOneDataResponsePullDto levelOneDataResponsePullDto) {
-        String sql = "UPDATE levelonedata SET title = ?, author =?, contents = ? WHERE id = ?";
-        jdbcTemplate.update(sql,
-                levelOneDataResponsePullDto.getTitle(), levelOneDataResponsePullDto.getAuthor(),
-                levelOneDataResponsePullDto.getContents(),
-                id);
-
-    }
-
-    public void delete(Long id) {
-        String sql = "DELETE FROM levelonedata WHERE id = ?";
-        jdbcTemplate.update(sql, id);
     }
 }
